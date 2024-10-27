@@ -1,0 +1,65 @@
+<form name="OdebranieZamowienia">
+  <div class="form-group">
+    <label for="klient">Imię i nazwisko</label>
+    <input class="form-control"
+           cam-variable-type="String"
+           cam-variable-name="zamowienie_klient"
+           name="klient"
+           readonly="true" />
+  </div>
+
+    <div class="form-group">
+    	<label for="adres">Adres dostawy</label>
+    	<input class="form-control"
+           cam-variable-type="String"
+           cam-variable-name="adres"
+           name="adres"
+           readonly="true" />
+	</div>
+
+  <div class="form-group">
+    <label for="pakiet">Pakiet</label>
+    <input class="form-control"
+           cam-variable-type="String"
+           cam-variable-name="pakiet"
+           name="pakiet"
+           readonly="true" />
+  </div>
+  
+  <div class="form-group">
+		<label for="ileDni">Catering będzie dostarczany przez tyle dni:</label>
+		<input class="form-control"
+		cam-variable-type="Integer"
+		cam-variable-name="ile_dni"
+		name="ileDni"
+		readonly="true" />
+	</div>
+  
+  <div class="form-group">
+	  <label for="czyPozytywna">Czy przyjęto do realizacji</label>
+	  <input class="form-control"
+	         cam-variable-type="Boolean"
+	         cam-variable-name="decyzja_czyPozytywna"
+	         name="czyPozytywna"
+	         readonly="true" />
+	</div>
+	
+	<div class="form-group">
+	  <label for="nrZamowienia">Numer zamówienia</label>
+	  <input class="form-control"
+	         cam-variable-type="String"
+	         cam-variable-name="nr_zamowienia"
+	         name="nrZamowienia"
+	         readonly="true" />
+	</div>
+	
+  <div class="form-group">
+	  <label for="dodatkoweUwagi">Dodatkowe uwagi</label>
+	  <input class="form-control"
+	         cam-variable-type="String"
+	         cam-variable-name="dodatkowe_uwagi"
+	         name="dodatkoweUwagi"
+	         readonly="true" />
+	</div>
+	
+</form>

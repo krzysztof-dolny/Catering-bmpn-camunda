@@ -1,0 +1,49 @@
+<form name="ZlozenieZamowienia">
+  <div class="form-group">
+    <label for="klient">Imię i nazwisko</label>
+    <input class="form-control"
+           cam-variable-type="String"
+           cam-variable-name="zamowienie_klient"
+           name="klient" />
+  </div>
+  
+  <div class="form-group">
+    <label for="adres">Adres dostawy</label>
+    <input class="form-control"
+           cam-variable-type="String"
+           cam-variable-name="adres"
+           name="adres" />
+  </div>
+  
+  <div class="form-group">
+    <label for="strefaDostawy">Strefa Dostawy</label>
+    <select class="form-control"
+            cam-variable-type="String"
+            cam-variable-name="strefa_dostawy"
+            name="strefaDostawy">
+      <option value="Centrum Poznania">Centrum Poznania</option>
+      <option value="Obrzeża Poznania">Obrzeża Poznania</option>
+      <option value="Poza Poznaniem">Poza Poznaniem</option>
+    </select>
+  </div>
+  
+  <div class="form-group">
+    <label for="pakiet">Pakiet</label>
+    <select class="form-control"
+            cam-variable-type="String"
+            cam-variable-name="pakiet"
+            name="pakiet">
+      <option value="Pakiet standard (obiady) 20zł/dzień">Pakiet standard (obiady) 20zł/dzień</option>
+      <option value="Pakiet premium (śniadanie + obiad + kolacja) 40zł/dzień">Pakiet premium (śniadanie + obiad + kolacja) 40zł/dzień</option>
+    </select>
+  </div>
+  
+ 	<div class="form-group">
+		<label for="ileDni">Przez ile dni dostarczany ma być catering?</label>
+		<input class="form-control"
+		cam-variable-type="Integer"
+		cam-variable-name="ile_dni"
+		name="ileDni" />
+	</div>
+  
+</form>

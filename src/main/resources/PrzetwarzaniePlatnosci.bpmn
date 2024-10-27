@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_05vid0m" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
+  <bpmn:error id="oplataErrID" name="OplataError" errorCode="OplataKwotaErrCode" />
+  <bpmn:process id="PrzetwarzaniePlatnosci" name="PrzetwarzaniePlatnosci" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_0vi0fyf</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_1n5oqp4" name="Czy platnosc poprawna?" default="SequenceFlow_0zt10v6">
+      <bpmn:incoming>SequenceFlow_0vi0fyf</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0zt10v6</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0nlu5ax</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_0b3b311</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="SequenceFlow_0vi0fyf" sourceRef="StartEvent_1" targetRef="ExclusiveGateway_1n5oqp4" />
+    <bpmn:sequenceFlow id="SequenceFlow_0zt10v6" name="Tak" sourceRef="ExclusiveGateway_1n5oqp4" targetRef="Task_0qiow1o" />
+    <bpmn:scriptTask id="Task_0qiow1o" name="Utworzenie numeru zamówienia" scriptFormat="JavaScript" camunda:resultVariable="nr_zamowienia">
+      <bpmn:incoming>SequenceFlow_0zt10v6</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0ujehp9</bpmn:outgoing>
+      <bpmn:script>var randomNumber = Math.floor(100000 + Math.random() * 900000);  // losowa liczba z zakresu 100000-999999
+var prefix = 'CAT';
+var nrZamowienia = prefix + randomNumber;
+execution.setVariable('nr_zamowienia', nrZamowienia);</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="EndEvent_08gb915">
+      <bpmn:incoming>SequenceFlow_0ujehp9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0ujehp9" sourceRef="Task_0qiow1o" targetRef="EndEvent_08gb915" />
+    <bpmn:endEvent id="EndEvent_0q2pcia">
+      <bpmn:incoming>SequenceFlow_0nlu5ax</bpmn:incoming>
+      <bpmn:errorEventDefinition errorRef="oplataErrID" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0nlu5ax" name="Niepoprawna kwota" sourceRef="ExclusiveGateway_1n5oqp4" targetRef="EndEvent_0q2pcia">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${kwota&lt;kwota_do_zaplacenia}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_0b3b311" name="Niepoprawny nr Konta" sourceRef="ExclusiveGateway_1n5oqp4" targetRef="EndEvent_0t0i3fn">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${kwota == null || oplata_nrKonta.length() != 9}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="EndEvent_0t0i3fn">
+      <bpmn:incoming>SequenceFlow_0b3b311</bpmn:incoming>
+      <bpmn:errorEventDefinition errorRef="oplataErrID" />
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="PrzetwarzaniePlatnosci">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="173" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_1n5oqp4_di" bpmnElement="ExclusiveGateway_1n5oqp4" isMarkerVisible="true">
+        <dc:Bounds x="263" y="95" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="256" y="57.5" width="64" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0vi0fyf_di" bpmnElement="SequenceFlow_0vi0fyf">
+        <di:waypoint x="209" y="120" />
+        <di:waypoint x="263" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0zt10v6_di" bpmnElement="SequenceFlow_0zt10v6">
+        <di:waypoint x="313" y="120" />
+        <di:waypoint x="366" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="330" y="102" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_1czj14k_di" bpmnElement="Task_0qiow1o">
+        <dc:Bounds x="366" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_08gb915_di" bpmnElement="EndEvent_08gb915">
+        <dc:Bounds x="514" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ujehp9_di" bpmnElement="SequenceFlow_0ujehp9">
+        <di:waypoint x="466" y="120" />
+        <di:waypoint x="514" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_00ohmkd_di" bpmnElement="EndEvent_0q2pcia">
+        <dc:Bounds x="514" y="213" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0nlu5ax_di" bpmnElement="SequenceFlow_0nlu5ax">
+        <di:waypoint x="288" y="145" />
+        <di:waypoint x="288" y="231" />
+        <di:waypoint x="514" y="231" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="298" y="181" width="66" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0b3b311_di" bpmnElement="SequenceFlow_0b3b311">
+        <di:waypoint x="288" y="145" />
+        <di:waypoint x="288" y="317" />
+        <di:waypoint x="514" y="317" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="293" y="270" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="EndEvent_1d7zq9y_di" bpmnElement="EndEvent_0t0i3fn">
+        <dc:Bounds x="514" y="299" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

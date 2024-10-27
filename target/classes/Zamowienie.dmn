@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" id="Definitions_11lgb40" name="DRD" namespace="http://camunda.org/schema/1.0/dmn">
+  <decision id="Zamowienie" name="Zamowienie">
+    <decisionTable id="decisionTable_1">
+      <input id="input_1" label="Strefa dostawy">
+        <inputExpression id="inputExpression_1" typeRef="string">
+          <text>${strefa_dostawy}</text>
+        </inputExpression>
+      </input>
+      <input id="InputClause_0mnqop7" label="Pakiet">
+        <inputExpression id="LiteralExpression_0r2anjc" typeRef="string">
+          <text>${pakiet}</text>
+        </inputExpression>
+      </input>
+      <output id="output_1" label="Czy Pozytywna?" name="decyzja_czyPozytywna" typeRef="boolean" />
+      <output id="OutputClause_00woaz3" label="Kwota do zapłacenia" name="kwota_do_zaplacenia" typeRef="long" />
+      <output id="OutputClause_0jn6fvp" label="Dodatkowe uwagi" name="dodatkowe_uwagi" typeRef="string" />
+      <rule id="DecisionRule_0gyrklz">
+        <inputEntry id="UnaryTests_0f17yqk">
+          <text>"Poza Poznaniem",""</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_09ctd8p">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1mn3i5e">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1qwe1ge">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0lg5zn9">
+          <text>"Niestety znajdujesz się poza strefą dostawy, lecz w przyszłości na pewno będziemy ją poszerzać :)"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_13mjzr8">
+        <inputEntry id="UnaryTests_0zxgi20">
+          <text>"Obrzeża Poznania"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0sh0x8f">
+          <text>"Pakiet standard (obiady) 20zł/dzień"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0hii898">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_09nqsg2">
+          <text>30</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_14k7qwp">
+          <text>"Dziękujemy za wybranie naszego cateringu :)"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1hmlf5f">
+        <inputEntry id="UnaryTests_0ksz8ce">
+          <text>"Obrzeża Poznania"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_09crvvg">
+          <text>"Pakiet premium (śniadanie + obiad + kolacja) 40zł/dzień"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1cfvav3">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0jw9ezg">
+          <text>60</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_05zdob7">
+          <text>"Dziękujemy za wybranie naszego cateringu :)"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_178r598">
+        <inputEntry id="UnaryTests_0kye8zs">
+          <text>"Centrum Poznania"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0xvhads">
+          <text>"Pakiet standard (obiady) 20zł/dzień"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1kpahi1">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0joc13a">
+          <text>20</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0cup557">
+          <text>"Dziękujemy za wybranie naszego cateringu :)"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_08efv2x">
+        <inputEntry id="UnaryTests_1osg6k6">
+          <text>"Centrum Poznania"</text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_05mojn5">
+          <text>"Pakiet premium (śniadanie + obiad + kolacja) 40zł/dzień"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_05nblfn">
+          <text>true</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0d5107f">
+          <text>40</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1ysf84c">
+          <text>"Dziękujemy za wybranie naszego cateringu :)"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_1q4jaut">
+        <inputEntry id="UnaryTests_03w1q7b">
+          <text></text>
+        </inputEntry>
+        <inputEntry id="UnaryTests_0df5ybi">
+          <text>""</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_15m7j8a">
+          <text>false</text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_0la404s">
+          <text></text>
+        </outputEntry>
+        <outputEntry id="LiteralExpression_1wxdar4">
+          <text>"Błędnie wypełniony formularz"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>

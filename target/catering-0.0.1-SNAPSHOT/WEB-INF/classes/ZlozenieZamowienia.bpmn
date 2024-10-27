@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_17299is" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="2.0.3">
+  <bpmn:collaboration id="Collaboration_1z0wl8f">
+    <bpmn:participant id="catering" name="Catering" processRef="Catering" />
+  </bpmn:collaboration>
+  <bpmn:error id="oplataErrID" name="OplataError" errorCode="OplataKwotaErrCode" />
+  <bpmn:process id="Catering" isExecutable="true">
+    <bpmn:exclusiveGateway id="ExclusiveGateway_0xszbz2" name="Czy przyjeto zamowienie?&#10;&#10;" default="SequenceFlow_04c4ts7">
+      <bpmn:incoming>SequenceFlow_127zwer</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0m686uy</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_04c4ts7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:businessRuleTask id="Task_06m4qo5" name="Zamowienie" default="SequenceFlow_127zwer" camunda:decisionRef="Zamowienie">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="decyzja_czyPozytywna">
+            <camunda:script scriptFormat="groovy">decisionResult.getSingleResult().getEntry("decyzja_czyPozytywna");</camunda:script>
+          </camunda:outputParameter>
+          <camunda:outputParameter name="dodatkowe_uwagi">${decisionResult.getSingleResult().dodatkowe_uwagi}</camunda:outputParameter>
+          <camunda:outputParameter name="kwota_do_zaplacenia">
+            <camunda:script scriptFormat="groovy">decisionResult.getSingleResult().getEntry("kwota_do_zaplacenia");</camunda:script>
+          </camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1ww1cdk</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_127zwer</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:startEvent id="StartEvent_1" camunda:formKey="embedded:app:forms/ZlozenieZamowienia.html" camunda:initiator="inicjator">
+      <bpmn:outgoing>SequenceFlow_1ww1cdk</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:scriptTask id="Task_0fwug28" name="Przetwarzanie zamówienia" default="SequenceFlow_0klusdv" scriptFormat="groovy">
+      <bpmn:incoming>SequenceFlow_04c4ts7</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0klusdv</bpmn:outgoing>
+      <bpmn:script>execution.setVariable("kwota_do_zaplacenia", execution.getVariable("kwota_do_zaplacenia") * execution.getVariable("ile_dni"));</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_1402nvy" name="Przekroczono czas płatności" sourceRef="BoundaryEvent_0543e9n" targetRef="Task_0krveoe" />
+    <bpmn:sequenceFlow id="SequenceFlow_0klusdv" sourceRef="Task_0fwug28" targetRef="Task_0osuj6a" />
+    <bpmn:sequenceFlow id="SequenceFlow_04c4ts7" sourceRef="ExclusiveGateway_0xszbz2" targetRef="Task_0fwug28" />
+    <bpmn:sequenceFlow id="SequenceFlow_1ww1cdk" sourceRef="StartEvent_1" targetRef="Task_06m4qo5" />
+    <bpmn:sequenceFlow id="SequenceFlow_0zup980" sourceRef="Task_1ezi3wj" targetRef="EndEvent_1m8w7jz" />
+    <bpmn:sequenceFlow id="SequenceFlow_0m686uy" name="Nie" sourceRef="ExclusiveGateway_0xszbz2" targetRef="Task_1ezi3wj">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${!decyzja_czyPozytywna}</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="SequenceFlow_127zwer" sourceRef="Task_06m4qo5" targetRef="ExclusiveGateway_0xszbz2" />
+    <bpmn:sequenceFlow id="SequenceFlow_11sqc7r" name="Błąd płatności" sourceRef="Task_0krveoe" targetRef="Task_1ezi3wj" />
+    <bpmn:sequenceFlow id="SequenceFlow_1a60bkw" sourceRef="Task_0osuj6a" targetRef="Task_01rrnt5" />
+    <bpmn:sequenceFlow id="SequenceFlow_0j1bq8e" sourceRef="Task_01rrnt5" targetRef="Task_1ezi3wj" />
+    <bpmn:callActivity id="Task_01rrnt5" name="Call Przetwarzanie Platnosci" calledElement="PrzetwarzaniePlatnosci">
+      <bpmn:extensionElements>
+        <camunda:in source="kwota_do_zaplacenia" target="kwota_do_zaplacenia" />
+        <camunda:in source="kwota" target="kwota" />
+        <camunda:in source="nr_zamowienia" target="nr_zamowienia" />
+        <camunda:out source="nr_zamowienia" target="nr_zamowienia" />
+        <camunda:in source="oplata_nrKonta" target="oplata_nrKonta" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1a60bkw</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0j1bq8e</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:userTask id="Task_1ezi3wj" name="Odbiór decyzji" camunda:formKey="embedded:app:forms/OdebranieZamowienia.html" camunda:assignee="${inicjator}">
+      <bpmn:incoming>SequenceFlow_0m686uy</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_11sqc7r</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0j1bq8e</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0zup980</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="EndEvent_1m8w7jz">
+      <bpmn:incoming>SequenceFlow_0zup980</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:scriptTask id="Task_0krveoe" name="Transakcja odrzucona" default="SequenceFlow_11sqc7r" camunda:resultVariable="decyzja_czyPozytywna">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:outputParameter name="decyzja_czyPozytywna">false</camunda:outputParameter>
+          <camunda:outputParameter name="dodatkowe_uwagi">Błąd płatności</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_1402nvy</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_11sqc7r</bpmn:outgoing>
+      <bpmn:script>${false}</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:userTask id="Task_0osuj6a" name="Platnosc" default="SequenceFlow_1a60bkw" camunda:assignee="${inicjator}">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="oplata_nrKonta" label="Nr konta bankowego" type="string" />
+          <camunda:formField id="kwota" label="Kwota do zapłacenia: ${kwota_do_zaplacenia} zł" type="long" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>SequenceFlow_0klusdv</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_0kudmk6</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1a60bkw</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="BoundaryEvent_0543e9n" attachedToRef="Task_0osuj6a">
+      <bpmn:outgoing>SequenceFlow_1402nvy</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT1M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="BoundaryEvent_0ly6wzc" name="Platnosc Error" attachedToRef="Task_01rrnt5">
+      <bpmn:outgoing>SequenceFlow_0kudmk6</bpmn:outgoing>
+      <bpmn:errorEventDefinition errorRef="oplataErrID" camunda:errorCodeVariable="oplata_errCode" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0kudmk6" sourceRef="BoundaryEvent_0ly6wzc" targetRef="Task_0osuj6a" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_1z0wl8f">
+      <bpmndi:BPMNShape id="Participant_1w2sqfz_di" bpmnElement="catering">
+        <dc:Bounds x="-73" y="8" width="1114" height="623" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="-14" y="113" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_0xszbz2_di" bpmnElement="ExclusiveGateway_0xszbz2" isMarkerVisible="true">
+        <dc:Bounds x="247" y="106" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="241" y="74" width="65" height="53" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_1t8lcq8_di" bpmnElement="Task_1ezi3wj">
+        <dc:Bounds x="607" y="91" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1m8w7jz_di" bpmnElement="EndEvent_1m8w7jz">
+        <dc:Bounds x="767" y="113" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0zup980_di" bpmnElement="SequenceFlow_0zup980">
+        <di:waypoint x="707" y="131" />
+        <di:waypoint x="767" y="131" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0m686uy_di" bpmnElement="SequenceFlow_0m686uy">
+        <di:waypoint x="297" y="131" />
+        <di:waypoint x="607" y="131" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="448" y="109" width="17" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_127zwer_di" bpmnElement="SequenceFlow_127zwer">
+        <di:waypoint x="221" y="131" />
+        <di:waypoint x="247" y="131" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BusinessRuleTask_0igdlzl_di" bpmnElement="Task_06m4qo5">
+        <dc:Bounds x="121" y="91" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="UserTask_0nujhig_di" bpmnElement="Task_0osuj6a">
+        <dc:Bounds x="276" y="277" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ScriptTask_05z10zn_di" bpmnElement="Task_0krveoe">
+        <dc:Bounds x="618" y="377" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_11sqc7r_di" bpmnElement="SequenceFlow_11sqc7r">
+        <di:waypoint x="698" y="377" />
+        <di:waypoint x="698" y="171" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="710" y="272" width="69" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1ww1cdk_di" bpmnElement="SequenceFlow_1ww1cdk">
+        <di:waypoint x="22" y="131" />
+        <di:waypoint x="121" y="131" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_04c4ts7_di" bpmnElement="SequenceFlow_04c4ts7">
+        <di:waypoint x="272" y="156" />
+        <di:waypoint x="272" y="226" />
+        <di:waypoint x="91" y="226" />
+        <di:waypoint x="91" y="317" />
+        <di:waypoint x="121" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_0egpz4r_di" bpmnElement="Task_0fwug28">
+        <dc:Bounds x="121" y="277" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0klusdv_di" bpmnElement="SequenceFlow_0klusdv">
+        <di:waypoint x="221" y="317" />
+        <di:waypoint x="276" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1402nvy_di" bpmnElement="SequenceFlow_1402nvy">
+        <di:waypoint x="325" y="375" />
+        <di:waypoint x="325" y="417" />
+        <di:waypoint x="618" y="417" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="383" y="422" width="70" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BoundaryEvent_1oakf0a_di" bpmnElement="BoundaryEvent_0543e9n">
+        <dc:Bounds x="307" y="339" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="CallActivity_1xvpr3n_di" bpmnElement="Task_01rrnt5">
+        <dc:Bounds x="445" y="277" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1a60bkw_di" bpmnElement="SequenceFlow_1a60bkw">
+        <di:waypoint x="376" y="317" />
+        <di:waypoint x="445" y="317" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0j1bq8e_di" bpmnElement="SequenceFlow_0j1bq8e">
+        <di:waypoint x="545" y="317" />
+        <di:waypoint x="631" y="317" />
+        <di:waypoint x="631" y="171" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="BoundaryEvent_1pzrrll_di" bpmnElement="BoundaryEvent_0ly6wzc">
+        <dc:Bounds x="477" y="259" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="515" y="247" width="71" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0kudmk6_di" bpmnElement="SequenceFlow_0kudmk6">
+        <di:waypoint x="495" y="259" />
+        <di:waypoint x="495" y="239" />
+        <di:waypoint x="326" y="239" />
+        <di:waypoint x="326" y="277" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
